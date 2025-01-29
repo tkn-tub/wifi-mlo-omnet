@@ -1,0 +1,3 @@
+package mlo;
+
+@license(LGPL);

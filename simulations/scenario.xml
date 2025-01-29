@@ -1,0 +1,5 @@
+<scenario>
+    <at t="15s">
+        <crash module="host1.lmac[1]"/>
+    </at>
+</scenario>

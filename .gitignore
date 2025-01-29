@@ -1,0 +1,12 @@
+/out
+/simulations/results/*
+/simulations/run
+/simulations/*log
+/simulations/run
+/src/*.exe
+/analysis
+/.settings
+
+*.qtenvrc
+*.sca
+*.exe
