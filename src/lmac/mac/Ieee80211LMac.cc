@@ -195,8 +195,8 @@ void Ieee80211LMac::sendUp(cMessage *msg)
     Packet* frame = check_and_cast<Packet *>(msg);
 
     // Update protocol to be sent to UMAC
-    frame->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ieee80211be);
-    frame->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ieee80211be);
+    frame->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(ieee80211be);
+    frame->addTagIfAbsent<PacketProtocolTag>()->setProtocol(ieee80211be);
     frame->addTagIfAbsent<InterfaceInd>()->setInterfaceId(networkInterface->getInterfaceId());
 
     MacProtocolBase::sendUp(frame);
@@ -210,8 +210,8 @@ void Ieee80211LMac::sendUpFrame(Packet *frame)
     decapsulate(frame);
 
     // Update protocol to be sent to UMAC
-    frame->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ieee80211be);
-    frame->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ieee80211be);
+    frame->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(ieee80211be);
+    frame->addTagIfAbsent<PacketProtocolTag>()->setProtocol(ieee80211be);
     frame->addTagIfAbsent<InterfaceInd>()->setInterfaceId(networkInterface->getInterfaceId());
 
     if (!(header->getType() & 0x30))

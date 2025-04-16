@@ -53,12 +53,8 @@ namespace inet {
 
 class IInterfaceTable;
 
-
 class UMac : public LayeredProtocolBase, public DefaultProtocolRegistrationListener
 {
-    public:
-        static const Protocol ieee80211be;
-
     protected:
 
       simsignal_t rcvdPacketsUnique;
