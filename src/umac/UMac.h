@@ -37,7 +37,7 @@ struct QosParameters {
     int ifaceId = 0;
 };
 
-std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
+inline std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
     return os << "Interface Id: " << params.ifaceId << endl
             << "Last avg. SNIR: " << params.snr;
 }
