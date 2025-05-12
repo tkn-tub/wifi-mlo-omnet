@@ -33,7 +33,7 @@ struct ChannelAccessParameters {
     int ifaceId = 0;
 };
 
-std::ostream& operator<<(std::ostream& os, const ChannelAccessParameters& params) {
+inline std::ostream& operator<<(std::ostream& os, const ChannelAccessParameters& params) {
     return os << "Interface Id: " << params.ifaceId << endl
             << "Access Category: " << params.ac << endl
             << "Backoff Counter: " << params.backoffCounter;

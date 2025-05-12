@@ -31,6 +31,8 @@
 #include "inet/linklayer/ieee8022/Ieee8022Llc.h"
 #include "inet/linklayer/ieee8022/Ieee8022LlcHeader_m.h"
 
+#include "../mac/Ieee80211LMac.h"
+
 namespace inet {
 namespace ieee80211 {
 
@@ -62,8 +64,8 @@ void Ieee80211LPortal::decapsulate(Packet *packet) {
     // IMPORTANT: This part is modified to get it passed through U-MAC
     const auto& snapHeader = dynamicPtrCast<const Ieee8022LlcSnapHeader>(llcHeader);
     const Protocol *prot = ProtocolGroup::getEthertypeProtocolGroup()->getProtocol(snapHeader->getProtocolId());
-    packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ieee80211be);
-    packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ieee80211be);
+    packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(ieee80211be);
+    packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(ieee80211be);
     packet->addTagIfAbsent<MacProtocolInd>()->setProtocol(prot);
 }
 

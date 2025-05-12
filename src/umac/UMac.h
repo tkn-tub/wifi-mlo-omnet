@@ -37,7 +37,7 @@ struct QosParameters {
     int ifaceId = 0;
 };
 
-std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
+inline std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
     return os << "Interface Id: " << params.ifaceId << endl
             << "Last avg. SNIR: " << params.snr;
 }
@@ -53,12 +53,8 @@ namespace inet {
 
 class IInterfaceTable;
 
-
 class UMac : public LayeredProtocolBase, public DefaultProtocolRegistrationListener
 {
-    public:
-        static const Protocol ieee80211be;
-
     protected:
 
       simsignal_t rcvdPacketsUnique;

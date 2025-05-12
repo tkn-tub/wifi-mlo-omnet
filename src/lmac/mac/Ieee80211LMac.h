@@ -23,6 +23,7 @@
 #include "inet/physicallayer/wireless/common/contract/packetlevel/IRadio.h"
 
 #include "src/lmac/mac/coordinationfunction/LHcf.h"
+#include "Ieee80211beProtocol.h"
 
 using namespace inet;
 using namespace ieee80211;

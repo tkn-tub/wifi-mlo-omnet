@@ -35,6 +35,8 @@
 
 #include "inet/physicallayer/wireless/common/contract/packetlevel/SignalTag_m.h"
 
+#include "../lmac/mac/Ieee80211beProtocol.h"
+
 namespace inet {
 
 using namespace std;
@@ -80,8 +82,8 @@ void UMac::initialize(int stage)
     }
     else if (stage == INITSTAGE_LINK_LAYER) {
         // register service and protocol
-        registerService(Protocol::ieee80211be, gate("upperLayerIn"), gate("upperLayerOut"));
-        registerProtocol(Protocol::ieee80211be, gate("lowerLayerOut"), gate("lowerLayerIn"));
+        registerService(*ieee80211be, gate("upperLayerIn"), gate("upperLayerOut"));
+        registerProtocol(*ieee80211be, gate("lowerLayerOut"), gate("lowerLayerIn"));
 
         cGate *classifierGate = gate("classifierOut")->getNextGate();
         hasClassifier = classifierGate != nullptr;
