@@ -67,4 +67,4 @@ To cite this MLO implementation in your publications, you can use the following 
 
 ## Acknowledgements
 
-Thanks @avarga for the fixes on protocol dependencies!
+Thanks Andras Varga ([andras](https://github.com/avarga)) for the fixes on protocol dependencies.
