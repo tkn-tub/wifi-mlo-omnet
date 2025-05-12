@@ -40,18 +40,13 @@ You can find the relevant information in the reference paper.
 
 You can find the relevant information in the reference paper.
 
-## Installation Notes ##
+## Installation Notes 
 
 1. Several Eclipse configuration files in the repo (*.nedfolders, .nedexclusions, .oppbuildspec*) represent the project settings that everyone needs to follow. Alternatively, you can check the correct settings on the following screenshot:
 
 <p align="center"><img src="images/project-settings.png" alt="settings" height="390" width="550"></p>
 
 Additionally, `inet4.5` should be added to the project references.
-
-2. You should manually add 802.11be as a supported protocol under Ethernet protocol group by modifying `Protocol.h` and `ProtocolGroup.h` (under `inet/common/`). Since the supported protocols are listed under constant static variables, there is not a straightforward way to add new ones without modifying several other OMNeT++ modules that include these source files. Therefore, the following modifications are required for now:
-	- In `inet/common/Protocol.h`, add `static const Protocol ieee80211be;` as a new public variable under `Protocol` class.
-	- In `inet/common/Protocol.cc`, define `const Protocol Protocol::ieee80211be("ieee80211be", "Wi-Fi 7", Protocol::LinkLayer);` as a constant variable. 
-	- In `inet/common/ProtocolGroup.cc`, extend the static variable `static const ProtocolGroup::Protocols ethertypeProtocols` with `{ Protocol::ieee80211be.getId(), &Protocol::ieee80211be }`. 
 
 ## Reference
 
@@ -70,4 +65,6 @@ To cite this MLO implementation in your publications, you can use the following 
 }
 ```
 
+## Acknowledgements
 
+Thanks @avarga for the fixes on protocol dependencies!
