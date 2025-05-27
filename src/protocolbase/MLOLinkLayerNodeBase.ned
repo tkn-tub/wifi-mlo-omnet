@@ -74,7 +74,7 @@ module MLOLinkLayerNodeBase extends NodeBase
         umac: <default("UMac")> like IUMac {
             @display("p=820.4196,1062.484,row,150;q=queue");
         }
-        classifier: <default("RandomQosClassifier")> like IIeee8021dQosClassifier {
+        classifier: <default("QosClassifier")> like IIeee8021dQosClassifier {
             @display("p=605.9733,1062.484");
         }
         bl: MessageDispatcher {
@@ -86,16 +86,10 @@ module MLOLinkLayerNodeBase extends NodeBase
 
     connections allowunconnected:
 
-        //umac.lowerLayerOut --> classifier.in;
-        umac.lowerLayerOut --> bl.in++;
-        //umac.lowerLayerProtocolIndicatorOut --> bl.in++;
-
         umac.classifierIn <-- classifier.out;
         umac.classifierOut --> classifier.in;
-
-        //bl.in++ <-- classifier.out;
-
-        //umac.lowerLayerOut --> bl.in++;
+        
+        umac.lowerLayerOut --> bl.in++;
         bl.out++ --> umac.lowerLayerIn;
 
         li.out++ --> umac.upperLayerIn;

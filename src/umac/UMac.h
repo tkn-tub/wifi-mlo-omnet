@@ -88,6 +88,8 @@ class UMac : public LayeredProtocolBase, public DefaultProtocolRegistrationListe
 
       NetworkInterface **primaryLinkPerAc = nullptr;
 
+      const char *defaultInterfaceName = nullptr;
+
       void reassignNetworkAddress() ;
       void reassignMacAddress() ;
 

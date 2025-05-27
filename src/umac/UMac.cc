@@ -79,6 +79,8 @@ void UMac::initialize(int stage)
         cMessage* statisticsTimer = new cMessage("StatisticsTimer", 0);
         scheduleAt(2, statisticsTimer);
 
+        defaultInterfaceName = par("defaultInterface");
+
     }
     else if (stage == INITSTAGE_LINK_LAYER) {
         // register service and protocol
@@ -192,7 +194,7 @@ void UMac::handleUpperPacket(Packet *packet) {
 
 void UMac::sendPacket(Packet *packet) {
     // Sending to packets to the main interface, e.g., the first one registered.
-    NetworkInterface *targetIft = ift->getInterface(1);
+    NetworkInterface *targetIft = ift->findInterfaceByName(defaultInterfaceName);
     if(targetIft->getState() == NetworkInterface::State::UP) {
         packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(targetIft->getInterfaceId());
         send(packet, lowerLayerOutGateId);
@@ -253,17 +255,19 @@ void UMac::updateStatistics(Packet *packet) {
     string packetName = packet->getName();
 
     if(packetName.find("UDPData") != string::npos) {
-        //std::cout << "Packet received on " << this->getFullPath() << endl;
         int packetNumber = stoi(packetName.substr(packetName.find("-") + 1, packetName.length()));
+        double latency = (simTime() - packet->getCreationTime()).dbl();
         auto it = lot.find(receivedIftId);
+
+        recordScalar((std::string("#received " + packetName + " on ift[") + std::to_string(receivedIftId) + std::string("] with latency: ")).c_str(), latency);
 
         if(it != lot.end()) {
             (it->second).receivedPackets.push_back(packetNumber);
-            (it->second).latencyPackets.push_back((simTime() - packet->getCreationTime()).dbl());
+            (it->second).latencyPackets.push_back(latency);
         } else {
             LinkOverview lo = LinkOverview();
             lo.receivedPackets.push_back(packetNumber);
-            lo.latencyPackets.push_back((simTime() - packet->getCreationTime()).dbl());
+            lo.latencyPackets.push_back(latency);
             lot[receivedIftId] = lo;
         }
     }
@@ -362,7 +366,7 @@ void UMac::recordStatistics() {
     for (auto it = lot.begin(); it != lot.end(); it++) {
         std::vector<int> receivedPackets = (it->second).receivedPackets;
         totalReceivedPackets.insert(totalReceivedPackets.end(), receivedPackets.begin(), receivedPackets.end());
-        recordScalar((std::string("#received ift[") + std::to_string(it->first) + std::string("]")).c_str(), totalReceivedPackets.size());
+        recordScalar((std::string("#received ift[") + std::to_string(it->first) + std::string("]")).c_str(), receivedPackets.size());
     }
 
     std::sort(totalReceivedPackets.begin(), totalReceivedPackets.end());

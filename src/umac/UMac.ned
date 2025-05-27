@@ -22,6 +22,7 @@ module UMac like IUMac
         @class(inet::UMac);
         string interfaceTableModule;   // The path to the InterfaceTable module
         bool isStation = default(true);
+        string defaultInterface = default("lmac0");
         
         // IMPORTANT: Mode is not an active parameter for now. Just left here for future reference. 
         string mode @enum("UMac", "RandomUMac", "RedundancyUMac") = default("UMac"); 

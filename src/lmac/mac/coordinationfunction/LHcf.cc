@@ -13,6 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <omnetpp.h>
+#include <string>
+
 #include "LHcf.h"
 #include "inet/linklayer/ieee80211/mac/coordinationfunction/Hcf.h"
 #include "inet/linklayer/ieee80211/mac/blockack/OriginatorBlockAckAgreementHandler.h"
@@ -222,6 +225,13 @@ void LHcf::transmitFrame(Packet *packet, simtime_t ifs)
             throw cRuntimeError("Multiple protection is unsupported");
         else
             throw cRuntimeError("Undefined protection mechanism");
+
+        // IMPORTANT: This is added for collecting statistics
+        std::string packetName = packet->getName();
+        if(packetName.find("UDPData") != std::string::npos) {
+            recordScalar(std::string("#sent " + packetName).c_str(), sentPackets);
+            sentPackets++;
+        }
 
         tx->transmitFrame(packet, packet->peekAtFront<Ieee80211MacHeader>(), ifs, this);
     }
@@ -561,6 +571,7 @@ void LHcf::frameSequenceFinished()
     else
         throw cRuntimeError("Frame sequence finished but channel owner not found!");
 }
+
 
 } // namespace ieee80211
 } // namespace inet

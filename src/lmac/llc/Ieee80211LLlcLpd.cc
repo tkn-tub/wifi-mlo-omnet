@@ -42,7 +42,6 @@ Define_Module(Ieee80211LLlcLpd);
 void Ieee80211LLlcLpd::decapsulate(Packet *frame)
 {
     const auto& llcHeader = frame->popAtFront<Ieee8022LlcHeader>();
-
     auto sapInd = frame->addTagIfAbsent<Ieee802SapInd>();
     sapInd->setSsap(llcHeader->getSsap());
     sapInd->setDsap(llcHeader->getDsap());

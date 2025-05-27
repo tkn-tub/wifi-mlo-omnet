@@ -62,6 +62,8 @@ class LHcf : public Hcf {
 
     bool isAckRequired;
 
+    int sentPackets = 0;
+
     void initialize(int stage) override;
     void handleInternalCollision(std::vector<LEdcaf *> internallyCollidedEdcafs);
     FrameSequenceContext *buildContext(AccessCategory ac);

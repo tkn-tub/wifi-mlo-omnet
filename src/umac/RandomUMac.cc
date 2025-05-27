@@ -34,7 +34,7 @@ void RandomUMac::sendPacket(Packet *packet) {
         targetIft = ift->getInterface(std::rand() % ift->getNumInterfaces());
         randomTrial--;
     }
-
+    std::cout << "Randomly selecting interface - " << targetIft->getInterfaceId() << std::endl;
     if(targetIft->getState() == NetworkInterface::State::UP) {
         packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(targetIft->getInterfaceId());
         send(packet, lowerLayerOutGateId);
