@@ -33,6 +33,7 @@ class LEdcaf : public Edcaf
     int getQueueSize();
     // IMPORTANT: This function is overwritten to circumvent a SEGFAULT in the internal collision handler
     virtual InProgressFrames *getInProgressFrames() const override { return inProgressFrames; }
+    virtual void finish() override;
 
   protected:
     LContention *contention = nullptr;

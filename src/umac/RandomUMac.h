@@ -24,6 +24,8 @@ class RandomUMac : public UMac
 {
     protected:
         virtual void sendPacket(Packet *packet) override;
+        virtual void handleUpperPacket(Packet *packet) override;
+
     };
 }
 

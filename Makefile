@@ -1,22 +1,17 @@
 #
-# OMNeT++/OMNEST Makefile for mlo
+# OMNeT++/OMNEST Makefile for $(LIB_PREFIX)mlo
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -O out -KINET4_5_PROJ=../inet4.5 -DINET_IMPORT -I. -I$$\(INET4_5_PROJ\)/src -L$$\(INET4_5_PROJ\)/src -lINET$$\(D\)
+#  opp_makemake --make-so -f --deep -O out -KINET4_5_PROJ=../inet4.5 -DINET_IMPORT -I. -I$$\(INET4_5_PROJ\)/src -L$$\(INET4_5_PROJ\)/src -lINET$$\(D\)
 #
 
 # Name of target to be created (-o option)
 TARGET_DIR = .
-TARGET_NAME = mlo$(D)
-TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
+TARGET_NAME = $(LIB_PREFIX)mlo$(D)
+TARGET = $(TARGET_NAME)$(SHARED_LIB_SUFFIX)
 TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
 TARGET_FILES = $(TARGET_DIR)/$(TARGET)
-
-# User interface (uncomment one) (-u option)
-USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
-#USERIF_LIBS = $(CMDENV_LIBS)
-#USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
 INCLUDE_PATH = -I. -I$(INET4_5_PROJ)/src
@@ -34,7 +29,9 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
 OBJS = \
+    $O/src/common/HighPrecisionLogger.o \
     $O/src/lmac/llc/Ieee80211LLlcLpd.o \
+    $O/src/lmac/mac/Ieee80211beProtocol.o \
     $O/src/lmac/mac/Ieee80211LMac.o \
     $O/src/lmac/mac/LDs.o \
     $O/src/lmac/mac/channelaccess/LEdca.o \
@@ -42,6 +39,8 @@ OBJS = \
     $O/src/lmac/mac/contention/LContention.o \
     $O/src/lmac/mac/coordinationfunction/LHcf.o \
     $O/src/lmac/mac/originator/QosNoAckHandler.o \
+    $O/src/lmac/mgmt/Ieee80211LAgentSta.o \
+    $O/src/lmac/mgmt/Ieee80211LMgmtAp.o \
     $O/src/lmac/mgmt/Ieee80211LMgmtSta.o \
     $O/src/lmac/portal/Ieee80211LPortal.o \
     $O/src/relay/MLOIeee8021dRelay.o \
@@ -75,7 +74,7 @@ endif
 include $(CONFIGFILE)
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
 ifneq ($(PLATFORM),win32)
 LIBS += -Wl,-rpath,$(abspath $(INET4_5_PROJ)/src)
 endif
@@ -91,6 +90,20 @@ COPTS_FILE = $O/.last-copts
 ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(shell $(MKPATH) "$O")
   $(file >$(COPTS_FILE),$(COPTS))
+endif
+
+# On Windows, the target has additional file(s). An import lib and an optional debug symbol file is created too.
+ifeq ($(PLATFORM),win32)
+  TARGET_FILES+= $(TARGET_DIR)/$(TARGET_IMPLIB)
+  LDFLAGS+= $(LDFLAG_IMPLIB)$O/$(TARGET_IMPLIB)
+  ifeq ($(TOOLCHAIN_NAME),clang-msabi)
+    ifeq ($(MODE),debug)
+      TARGET_FILES+=$(TARGET_DIR)/$(TARGET_NAME).pdb
+    endif
+  else
+    TARGET_FILES+= $(TARGET_DIR)/$(TARGET_IMPDEF)
+    LDFLAGS+= $(LDFLAG_IMPDEF)$O/$(TARGET_IMPDEF)
+  endif
 endif
 
 #------------------------------------------------------------------------------
@@ -111,10 +124,14 @@ ifeq ($(TOOLCHAIN_NAME),clang-msabi)
 $O/$(TARGET_NAME).pdb: $O/$(TARGET)
 endif
 
-$O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
+$O/$(TARGET) $O/$(TARGET_IMPDEF) $O/$(TARGET_IMPLIB) &: $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 	@$(MKPATH) $O
-	@echo Creating executable: $@
-	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) -o $O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS)
+	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
+ifeq ($(PLATFORM),win32)
+	$(Q)llvm-ar d $O/$(TARGET_IMPLIB) $(TARGET) # WORKAROUND: throw away the first file from the archive to make the LLD generated import lib valid
+endif
 
 .PHONY: all clean cleanall depend msgheaders smheaders
 

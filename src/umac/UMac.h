@@ -37,11 +37,6 @@ struct QosParameters {
     int ifaceId = 0;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
-    return os << "Interface Id: " << params.ifaceId << endl
-            << "Last avg. SNIR: " << params.snr;
-}
-
 struct LinkOverview {
     QosParameters qosParams;
     std::vector<ChannelAccessParameters> channelParamsPerAc; // Channel access parameters for every AC on the corresponding link
@@ -51,11 +46,18 @@ struct LinkOverview {
 
 namespace inet {
 
+inline std::ostream& operator<<(std::ostream& os, const QosParameters& params) {
+    return os << "Interface Id: " << params.ifaceId << endl
+            << "Last avg. SNIR: " << params.snr;
+}
+
 class IInterfaceTable;
 
 class UMac : public LayeredProtocolBase, public DefaultProtocolRegistrationListener
 {
     protected:
+
+      MacAddress macAddr;
 
       simsignal_t rcvdPacketsUnique;
 

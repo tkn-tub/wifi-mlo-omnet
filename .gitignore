@@ -10,3 +10,6 @@
 *.qtenvrc
 *.sca
 *.exe
+*.dll
+*.a
+*.def

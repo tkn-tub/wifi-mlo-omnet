@@ -25,9 +25,9 @@ module UMac like IUMac
         string defaultInterface = default("lmac0");
         
         // IMPORTANT: Mode is not an active parameter for now. Just left here for future reference. 
-        string mode @enum("UMac", "RandomUMac", "RedundancyUMac") = default("UMac"); 
+        string mode @enum("UMac", "RandomUMac", "RedundancyUMac", "RtwtUMac", "RtwtUMacAccessPoint", "Ieee8021CbUMac") = default("UMac"); 
         
-        @signal[rcvdPacketsUnique](type=int);
+        @signal[rcvdPacketsUnique](type=unsigned int);
         
     gates:
         input classifierIn @loose;

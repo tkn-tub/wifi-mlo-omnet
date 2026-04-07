@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 #include <omnetpp.h>
 #include "inet/common/Simsignals.h"
@@ -104,6 +105,7 @@ void UMac::reassignMacAddress() {
     // IMPORTANT: Need to get the address of the __first__ interface with the __smallest__ address to comply with Global ARP and OMNeT++ addressing
     NetworkInterface *firstIface = ift->getInterface(0);
     const auto unifiedMacAddr = firstIface->getMacAddress();
+    macAddr = unifiedMacAddr;
 
     for(int i = 1; i < ift->getNumInterfaces(); i++) {
         NetworkInterface *iface = ift->getInterface(i);
@@ -173,6 +175,7 @@ void UMac::handleUpperPacket(Packet *packet) {
         // This assume that there is a (test) UDP application sending packets through all available links
         // so that the destination STAs can check changing link quality, in the absence of duplex traffic.
         string packetName = packet->getName();
+
         if(packetName.find("UDPLinkQuality") != string::npos) {
             sendTestPacket(packet);
         } else {
@@ -197,6 +200,8 @@ void UMac::sendPacket(Packet *packet) {
     NetworkInterface *targetIft = ift->findInterfaceByName(defaultInterfaceName);
     if(targetIft->getState() == NetworkInterface::State::UP) {
         packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(targetIft->getInterfaceId());
+        string packetName = packet->getName();
+        recordScalar((std::string("#sent " + packetName + " on ift[") + std::to_string(targetIft->getInterfaceId()) + std::string("] at: ")).c_str(), simTime());
         send(packet, lowerLayerOutGateId);
     } else {
         delete packet;
@@ -238,13 +243,14 @@ void UMac::handleLowerPacket(Packet *packet) {
         // IMPORTANT: AP keeps tracks of the received interface of each frame.
         packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(packet->getTag<InterfaceInd>()->getInterfaceId());
     } else {
-        updateStatistics(packet);
         string packetName = packet->getName();
         if(packetName.find("UDPLinkQuality") != string::npos) {
             delete packet;
             return;
         }
+        packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(packet->getTag<InterfaceInd>()->getInterfaceId());
     }
+    updateStatistics(packet);
     send(packet, upperLayerOutGateId);
 }
 
@@ -256,10 +262,12 @@ void UMac::updateStatistics(Packet *packet) {
 
     if(packetName.find("UDPData") != string::npos) {
         int packetNumber = stoi(packetName.substr(packetName.find("-") + 1, packetName.length()));
-        double latency = (simTime() - packet->getCreationTime()).dbl();
+
+        // FIXME: Latency calculation is not accurate since AP changes the packet creation timestamp, even though the OMNeT++ guideline says otherwise.
+        auto latency = (simTime() - packet->getCreationTime()).dbl();
         auto it = lot.find(receivedIftId);
 
-        recordScalar((std::string("#received " + packetName + " on ift[") + std::to_string(receivedIftId) + std::string("] with latency: ")).c_str(), latency);
+        recordScalar((std::string("#received " + packetName + " on ift[") + std::to_string(receivedIftId) + std::string("] at: ")).c_str(), simTime());
 
         if(it != lot.end()) {
             (it->second).receivedPackets.push_back(packetNumber);
@@ -369,8 +377,8 @@ void UMac::recordStatistics() {
         recordScalar((std::string("#received ift[") + std::to_string(it->first) + std::string("]")).c_str(), receivedPackets.size());
     }
 
-    std::sort(totalReceivedPackets.begin(), totalReceivedPackets.end());
-    auto uniqueReceivedPackets = std::unique(totalReceivedPackets.begin(), totalReceivedPackets.end()) - totalReceivedPackets.begin();
+    std::set<int> unique_elements(totalReceivedPackets.begin(), totalReceivedPackets.end());
+    auto uniqueReceivedPackets = unique_elements.size();
 
     emit(rcvdPacketsUnique, uniqueReceivedPackets);
 
@@ -386,6 +394,8 @@ void UMac::finish() {
     for (auto it = lot.begin(); it != lot.end(); it++) {
 
         std::vector<int> receivedPackets = (it->second).receivedPackets;
+        /*
+         * FIXME: Latency calculation is not accurate since AP changes the packet creation timestamp, even though the OMNeT++ guideline says otherwise.
         std::vector<double> latencyPackets = (it->second).latencyPackets;
 
         float averageLatency = 0.0;
@@ -395,12 +405,13 @@ void UMac::finish() {
             for(auto l: latencyPackets) averageLatency += l;
             averageLatency = averageLatency / count;
         }
+        */
 
         totalReceivedPackets.insert(totalReceivedPackets.end(), receivedPackets.begin(), receivedPackets.end());
 
         std::cout << "For interface " << it->first << endl
-                << "#received: " << receivedPackets.size() << endl
-                << "average latency: " << averageLatency << endl;
+                << "#received: " << receivedPackets.size() << endl;
+                // << "average latency: " << averageLatency << endl;
     }
 
     std::sort(totalReceivedPackets.begin(), totalReceivedPackets.end());

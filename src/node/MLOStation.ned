@@ -25,5 +25,6 @@ module MLOStation extends MLOApplicationLayerNodeBase
         ipv4.arp.proxyArpInterfaces = default(""); // proxy arp is disabled on hosts by default
         *.routingTableModule = default("^.ipv4.routingTable");
         numWlanInterfaces = default(2);
+        mobility.typename = default("StationaryMobility");
 }
 

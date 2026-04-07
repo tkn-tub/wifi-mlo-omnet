@@ -32,6 +32,8 @@
 #include "inet/common/socket/SocketTag_m.h"
 #include "inet/linklayer/ieee80211/mac/Ieee80211Frame_m.h"
 
+#include "src/common/HighPrecisionLogger.h"
+
 namespace inet {
 namespace ieee80211 {
 
@@ -194,6 +196,7 @@ void Ieee80211LMac::sendUp(cMessage *msg)
 
     Packet* frame = check_and_cast<Packet *>(msg);
 
+
     // Update protocol to be sent to UMAC
     frame->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(ieee80211be);
     frame->addTagIfAbsent<PacketProtocolTag>()->setProtocol(ieee80211be);
@@ -227,6 +230,9 @@ void Ieee80211LMac::processUpperFrame(Packet *packet, const Ptr<const Ieee80211D
     EV_INFO << "Frame " << packet << " received from higher layer, receiver = " << header->getReceiverAddress() << "\n";
     ASSERT(!header->getReceiverAddress().isUnspecified());
 
+    //std::string packetName = packet->getName();
+    //HighPrecisionLogger::logEvent(getFullPath().c_str(),"verification [X] L-MAC Tx:", packetName);
+
     if (mib->qos)
         hcf->processUpperFrame(packet, header);
     else
@@ -237,6 +243,9 @@ void Ieee80211LMac::processLowerFrame(Packet *packet, const Ptr<const Ieee80211M
 {
     Enter_Method("processLowerFrame(\"%s\")", packet->getName());
     take(packet);
+
+    //std::string packetName = packet->getName();
+    //HighPrecisionLogger::logEvent(getFullPath().c_str(),"verification [X] L-MAC Rx:", packetName);
 
     if (mib->qos) {
         /* IMPORTANT:

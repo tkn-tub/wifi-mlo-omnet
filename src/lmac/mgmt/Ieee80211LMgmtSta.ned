@@ -18,9 +18,13 @@ package mlo.lmac.mgmt;
 import inet.linklayer.ieee80211.mgmt.Ieee80211MgmtSta;
 import inet.linklayer.ieee80211.mgmt.IIeee80211Mgmt;
 
-module Ieee80211LMgmtSta extends Ieee80211MgmtSta like IIeee80211Mgmt
+module Ieee80211LMgmtSta extends Ieee80211MgmtSta like IIeee80211LMgmt
 {
     parameters:
         @class(inet::ieee80211::Ieee80211LMgmtSta);
+        
+    gates:
+        output llcOut @loose;
+        input llcIn @loose;
 
 }

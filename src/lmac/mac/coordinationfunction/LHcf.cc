@@ -149,7 +149,7 @@ void LHcf::processLowerFrame(Packet *packet, const Ptr<const Ieee80211MacHeader>
 
 void LHcf::channelGranted(IChannelAccess *channelAccess)
 {
-    // IMPORTANT: This functions is copied for reinstantiation of EDCAF (casting to LEdcaf) and proper use of LEdca - otherwise causes SEGFAULT.
+    // IMPORTANT: This function is copied for reinstantiation of EDCAF (casting to LEdcaf) and proper use of LEdca - otherwise causes SEGFAULT.
     Enter_Method("channelGranted");
     auto edcaf = check_and_cast<LEdcaf *>(channelAccess);
     if (edcaf) {
@@ -197,6 +197,11 @@ void LHcf::transmitFrame(Packet *packet, simtime_t ifs)
         auto header = packet->peekAtFront<Ieee80211MacHeader>();
         auto txop = channelOwner->getTxopProcedure();
         if (auto dataFrame = dynamicPtrCast<const Ieee80211DataHeader>(header)) {
+
+            int retryCount = edca->getMgmtAndNonQoSRecoveryProcedure()->getRetryCount(packet, dataFrame);
+            std::string packetName = packet->getName();
+            recordScalar((std::string("#transmission " + packetName + " tried for ")).c_str(), retryCount);
+
             OriginatorBlockAckAgreement *agreement = nullptr;
             if (originatorBlockAckAgreementHandler)
                 agreement = originatorBlockAckAgreementHandler->getAgreement(dataFrame->getReceiverAddress(), dataFrame->getTid());
@@ -225,13 +230,6 @@ void LHcf::transmitFrame(Packet *packet, simtime_t ifs)
             throw cRuntimeError("Multiple protection is unsupported");
         else
             throw cRuntimeError("Undefined protection mechanism");
-
-        // IMPORTANT: This is added for collecting statistics
-        std::string packetName = packet->getName();
-        if(packetName.find("UDPData") != std::string::npos) {
-            recordScalar(std::string("#sent " + packetName).c_str(), sentPackets);
-            sentPackets++;
-        }
 
         tx->transmitFrame(packet, packet->peekAtFront<Ieee80211MacHeader>(), ifs, this);
     }

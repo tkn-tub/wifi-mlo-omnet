@@ -30,6 +30,8 @@ import inet.networklayer.common.InterfaceTable;
 import inet.linklayer.contract.IWirelessInterface;
 import inet.linklayer.ieee80211.llc.IIeee80211Llc;
 
+import mlo.lmac.mgmt.IIeee80211LMgmt;
+
 module Ieee80211LInterface extends NetworkInterface like IWirelessInterface
 {
     parameters:
@@ -63,10 +65,10 @@ module Ieee80211LInterface extends NetworkInterface like IWirelessInterface
             parameters:
                 @display("p=300,200");
         }
-        agent: <default("Ieee80211AgentSta")> like IIeee80211Agent if typename != "" {
+        agent: <default("Ieee80211LAgentSta")> like IIeee80211Agent if typename != "" {
             @display("p=481,300");
         }
-        mgmt: <default("Ieee80211LMgmtSta")> like IIeee80211Mgmt  {
+        mgmt: <default("Ieee80211LMgmtSta")> like IIeee80211LMgmt  {
             @display("p=389,300");
         }
         mac: <default("Ieee80211LMac")> like IIeee80211Mac {

@@ -16,6 +16,7 @@
 #include "RandomUMac.h"
 
 #include <omnetpp.h>
+#include <string>
 
 #include "inet/linklayer/common/InterfaceTag_m.h"
 
@@ -34,12 +35,28 @@ void RandomUMac::sendPacket(Packet *packet) {
         targetIft = ift->getInterface(std::rand() % ift->getNumInterfaces());
         randomTrial--;
     }
-    std::cout << "Randomly selecting interface - " << targetIft->getInterfaceId() << std::endl;
+
     if(targetIft->getState() == NetworkInterface::State::UP) {
         packet->addTagIfAbsent<InterfaceReq>()->setInterfaceId(targetIft->getInterfaceId());
+        std::string packetName = packet->getName();
+        recordScalar((std::string("#sent " + packetName + " on ift[") + std::to_string(targetIft->getInterfaceId()) + std::string("] at: ")).c_str(), simTime());
         send(packet, lowerLayerOutGateId);
     } else {
         delete packet;
     }
 }
+
+void RandomUMac::handleUpperPacket(Packet *packet) {
+    //std::cout << this->getParentModule()->getName() << "." << this->getName() << "." <<  __func__ << "() logs - " << "Sent  " << packet->getName() << endl;
+
+    // Remove dispatch requirement otherwise the MessageDispatchers
+    // bounces the packets back.
+    packet->removeTagIfPresent<DispatchProtocolReq>();
+
+    if(isStation) {
+        updateChannelAccessParameters();
+    }
+    sendPacket(packet);
+}
+
 }

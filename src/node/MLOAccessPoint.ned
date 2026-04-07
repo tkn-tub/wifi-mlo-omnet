@@ -53,7 +53,7 @@ module MLOAccessPoint
         bool hasStatus = default(false);
         string fcsMode @enum("declared","computed") = default("declared");
         lmac[*].protocol = default("ieee8021be");
-        lmac[*].mgmt.typename = default("Ieee80211MgmtAp");
+        lmac[*].mgmt.typename = default("Ieee80211LMgmtAp");
         lmac[*].llc.typename = default("Ieee80211LPortal");
         lmac[*].agent.typename = default("");
         lmac[*].radio.antenna.mobilityModule = default("^.^.^.mobility");
@@ -62,6 +62,7 @@ module MLOAccessPoint
         *.interfaceTableModule = default(absPath(".interfaceTable"));
         *.fcsMode = this.fcsMode;
         ethernet.registerProtocol = default(true);
+        mobility.typename = default("StationaryMobility");
         
         umac.isStation = false;
         

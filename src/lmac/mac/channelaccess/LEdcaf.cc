@@ -13,6 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+#include <string>
 #include "LEdcaf.h"
 
 #include "inet/linklayer/ieee80211/mac/channelaccess/Edcaf.h"
@@ -27,6 +28,29 @@ namespace inet {
 namespace ieee80211 {
 
 Define_Module(LEdcaf);
+
+void LEdcaf::finish() {
+
+    // TODO: Need to make sure no packets are received in the queues but when we try to use the whole link capacity
+    // contention becomes the main factor for packet queueing. At least for the reliability of the final results,
+    // we need to know how many packets are not transmitted but buffered in the queues.
+
+    double queuedPackets = getQueueSize();
+    if(queuedPackets > 0) {
+        /*
+         * Recording all queued packets can help to evaluate per-app performance.
+        queueing::IPacketQueue *pq = getPendingQueue();
+        while(pq->getNumPackets()) {
+            Packet* pending_packet = pq->dequeuePacket();
+            std::string packetName = pending_packet->getName();
+            recordScalar((std::string("queued " + packetName + " at: ")).c_str(), simTime());
+            delete pending_packet;
+        }*/
+
+        std::cout << "#queuedPackets: " << queuedPackets << std::endl;
+        recordScalar("#queuedPackets: ", queuedPackets);
+    }
+}
 
 void LEdcaf::initialize(int stage)
 {
