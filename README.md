@@ -1,6 +1,6 @@
 # Implementation of Wi-Fi 7 MLO in OMNeT++ #
 
-This repo is the OMNeT++ project for MLO implementation. We use OMNeT++ v6.0.3 and INET v4.5.2. The MLO framework is mostly implemented on top of the existing 802.11 mechanisms in INET. 
+This repo is the OMNeT++ project for MLO implementation. We use OMNeT++ v6.4.0 and INET v4.7.0. The MLO framework is mostly implemented on top of the existing 802.11 mechanisms in INET. 
 
 ## General Overview
 
@@ -46,7 +46,7 @@ You can find the relevant information in the reference paper.
 
 <p align="center"><img src="images/project-settings.png" alt="settings" height="390" width="550"></p>
 
-Additionally, `inet4.5` should be added to the project references.
+Additionally, `inet-4.7.0` should be added to the project references.
 
 ## Reference
 

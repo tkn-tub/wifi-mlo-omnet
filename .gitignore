@@ -13,3 +13,7 @@
 *.dll
 *.a
 *.def
+*.so
+CLAUDE.md
+TODO.md
+

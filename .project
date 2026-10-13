@@ -3,7 +3,7 @@
 	<name>mlo</name>
 	<comment></comment>
 	<projects>
-		<project>inet4.5</project>
+		<project>inet-4.7.0</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -15,10 +15,11 @@
 
 package mlo.lmac.mac.channelaccess;
 
+import inet.common.Module;
 import inet.linklayer.ieee80211.mac.contract.ICollisionController;
 import inet.linklayer.ieee80211.mac.originator.NonQosRecoveryProcedure;
 
-module LEdca 
+module LEdca extends Module
 {
     parameters:
 		@class(inet::ieee80211::LEdca);

@@ -20,9 +20,9 @@ import inet.networklayer.common.NetworkInterface;
 import inet.networklayer.common.InterfaceTable;
 import inet.common.MessageDispatcher;
 import inet.physicallayer.wireless.common.contract.packetlevel.IRadio;
-import inet.linklayer.ethernet.contract.IEthernetLayer;
-import inet.linklayer.ieee8021q.IIeee8021qLayer;
-import inet.linklayer.ieee8021r.IIeee8021rLayer;
+import inet.linklayer.contract.IEthernetLayer;
+import inet.linklayer.contract.IIeee8021qLayer;
+import inet.linklayer.contract.IIeee8021rLayer;
 import inet.node.contract.IEthernetNetworkNode;
 import inet.protocolelement.contract.IProtocolLayer;
 import inet.node.base.NodeBase;
@@ -36,7 +36,7 @@ module MLOLinkLayerNodeBase extends NodeBase
         @figure[interfaceLayer](type=rectangle; pos=250,758; size=1000,360; fillColor=#00ffff; lineColor=#808080; cornerRadius=5; fillOpacity=0.1);
         @figure[interfaceLayer.title](type=text; pos=1245,763; anchor=ne; text="interface layer");
         @display("bgb=2693.7942,2316.708");
-            
+
         string opMode @enum("a","b","g(erp)","g(mixed)","n(mixed-2.4Ghz)","p","ac") = default("ac");
         int numLoInterfaces = default(1);
         bool recordPcap = default(false);
@@ -47,7 +47,7 @@ module MLOLinkLayerNodeBase extends NodeBase
         *.interfaceTableModule = default(absPath(".interfaceTable"));
         *.fcsMode = this.fcsMode;		
         ethernet.registerProtocol = default(true);
-        
+
         lmac[*].radio.antenna.mobilityModule = default("^.^.^.mobility");
 
     gates:
@@ -88,7 +88,7 @@ module MLOLinkLayerNodeBase extends NodeBase
 
         umac.classifierIn <-- classifier.out;
         umac.classifierOut --> classifier.in;
-        
+
         umac.lowerLayerOut --> bl.in++;
         bl.out++ --> umac.lowerLayerIn;
 

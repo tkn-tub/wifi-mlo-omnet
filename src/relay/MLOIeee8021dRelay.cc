@@ -22,7 +22,7 @@
 #include "inet/linklayer/common/MacAddressTag_m.h"
 #include "inet/linklayer/common/VlanTag_m.h"
 #include "inet/linklayer/common/UserPriorityTag_m.h"
-#include "inet/linklayer/configurator/Ieee8021dInterfaceData.h"
+#include "inet/linklayer/ieee8021d/common/Ieee8021dInterfaceData.h"
 
 namespace inet {
 
@@ -154,7 +154,6 @@ void MLOIeee8021dRelay::handleLowerPacket(Packet *incomingPacket)
         }
         delete incomingPacket;
     }
-    updateDisplayString();
 };
 
 }

@@ -7,7 +7,7 @@
 
 MAKEMAKE=opp_makemake $(MMOPT)
 
-INET4_5_PROJ=../inet4.5
+INET_4_7_0_PROJ=../inet-4.7.0
 
 all:
-	$(MAKEMAKE) -f --deep -O out -KINET4_5_PROJ=../inet4.5 -DINET_IMPORT -I. -I$$\(INET4_5_PROJ\)/src -L$$\(INET4_5_PROJ\)/src -lINET$$\(D\)
+	$(MAKEMAKE) --make-so -f --deep -O out -KINET_4_7_0_PROJ=../inet-4.7.0 -DINET_IMPORT -I. -I$$\(INET_4_7_0_PROJ\)/src -L$$\(INET_4_7_0_PROJ\)/src -lINET$$\(D\)

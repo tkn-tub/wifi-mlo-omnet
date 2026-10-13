@@ -32,6 +32,12 @@ network MLONetwork
             parameters:
                 @display("p=50,100");
         }
+        // separate medium for the 5 GHz link: links on different bands do not interact,
+        // and the medium's same-start-time check must not fire across bands
+        radioMedium5GHz: Ieee80211ScalarRadioMedium {
+            parameters:
+                @display("p=50,230");
+        }
         configurator: Ipv4NetworkConfigurator {
             parameters:
                 @display("p=50,167");

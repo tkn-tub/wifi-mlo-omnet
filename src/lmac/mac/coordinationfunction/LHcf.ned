@@ -30,15 +30,17 @@ import inet.linklayer.ieee80211.mac.protectionmechanism.SingleProtectionMechanis
 import inet.linklayer.ieee80211.mac.rateselection.QosRateSelection;
 import inet.linklayer.ieee80211.mac.recipient.RecipientQosMacDataService;
 
+import inet.common.Module;
 import mlo.lmac.mac.channelaccess.LEdca;
 
 //
 // Implements the HCF (Hybrid Coordination Function) for IEEE 802.11.
 //
-module LHcf like IHcf
+module LHcf extends Module like IHcf
 {
     parameters:
         @class(inet::ieee80211::LHcf);
+        displayStringTextFormat = default("{frameSequenceInfo}");
         bool isBlockAckSupported = default(false);
         bool isAckRequired = default(true);
 	

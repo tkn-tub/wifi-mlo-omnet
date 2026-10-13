@@ -65,6 +65,7 @@ void LHcf::initialize(int stage)
             originatorBlockAckProcedure = new OriginatorBlockAckProcedure();
             recipientBlockAckProcedure = new RecipientBlockAckProcedure();
         }
+        WATCH_EXPR("frameSequenceInfo", getFrameSequenceInfo());
     }
 }
 
@@ -122,7 +123,6 @@ void LHcf::processLowerFrame(Packet *packet, const Ptr<const Ieee80211MacHeader>
         if ((!isForUs(header) && !startRxTimer->isScheduled()) || isForUs(header)) {
             // IMPORTANT: Control frames, e.g., ACKs, are processed here.
             frameSequenceHandler->processResponse(packet);
-            updateDisplayString();
         }
         else {
             EV_INFO << "This frame is not for us" << std::endl;
@@ -181,7 +181,6 @@ void LHcf::transmissionComplete(Packet *packet, const Ptr<const Ieee80211MacHead
     auto edcaf = edca->getChannelOwner();
     if (edcaf) {
         frameSequenceHandler->transmissionComplete();
-        updateDisplayString();
     }
     else if (hcca->isOwning())
         throw cRuntimeError("Hcca is unimplemented!");
@@ -241,7 +240,6 @@ void LHcf::startFrameSequence(AccessCategory ac)
 {
     frameSequenceHandler->startFrameSequence(new HcfFs(), buildContext(ac), this);
     emit(IFrameSequenceHandler::frameSequenceStartedSignal, frameSequenceHandler->getContext());
-    updateDisplayString();
 }
 
 void LHcf::handleInternalCollision(std::vector<LEdcaf *> internallyCollidedEdcafs)
@@ -532,7 +530,7 @@ void LHcf::originatorProcessReceivedControlFrame(Packet *packet, const Ptr<const
 
 bool LHcf::hasFrameToTransmit(AccessCategory ac)
 {
-    auto edcaf = edca->getChannelOwner();
+    auto edcaf = edca->getEdcaf(ac);
     if (edcaf)
         return !edcaf->getPendingQueue()->isEmpty() || edcaf->getInProgressFrames()->hasInProgressFrames();
     else

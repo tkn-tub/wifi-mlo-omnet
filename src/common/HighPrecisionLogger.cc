@@ -7,6 +7,8 @@
 
 #include "HighPrecisionLogger.h"
 
+#include <chrono>
+
 std::ofstream HighPrecisionLogger::file;
 std::mutex HighPrecisionLogger::file_mutex;
 bool HighPrecisionLogger::initialized = false;
@@ -24,11 +26,9 @@ void HighPrecisionLogger::logEvent(const std::string& modulePath,
     std::lock_guard<std::mutex> lock(file_mutex);
     initialize();
 
-    LARGE_INTEGER counter, freq;
-    QueryPerformanceCounter(&counter);
-    QueryPerformanceFrequency(&freq);
-
-    double t_ns = double(counter.QuadPart) * 1e9 / double(freq.QuadPart);
+    // steady_clock is monotonic and portable (QueryPerformanceCounter on Windows, clock_gettime(CLOCK_MONOTONIC) on Linux)
+    auto now = std::chrono::steady_clock::now().time_since_epoch();
+    double t_ns = double(std::chrono::duration_cast<std::chrono::nanoseconds>(now).count());
 
     file << std::fixed << std::setprecision(0) << modulePath  << "#" << description;
     if(!packet.empty())

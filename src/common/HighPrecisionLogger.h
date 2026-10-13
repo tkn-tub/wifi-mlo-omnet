@@ -9,7 +9,6 @@
 #define COMMON_HIGHPRECISIONLOGGER_H_
 
 // HighPrecisionLogger.h
-#include <windows.h>
 #include <fstream>
 #include <iomanip>
 #include <mutex>
