@@ -126,7 +126,11 @@ void Ieee80211LMac::encapsulate(Packet *packet)
     else if (mib->mode == Ieee80211Mib::INFRASTRUCTURE) {
         if (mib->bssStationData.stationType == Ieee80211Mib::ACCESS_POINT) {
             header->setFromDS(true);
-            header->setAddress3(mib->address);
+            // IMPORTANT: Address 3 of a frame from the access point (FromDS) is the source address (SA), as in 802.11,
+            // so that the receiver knows the station the frame comes from. INET's Ieee80211Mac::encapsulate() puts the
+            // address of the access point there instead. The access point itself is the source of its own frames.
+            auto srcAddress = macAddressReq->getSrcAddress();
+            header->setAddress3(srcAddress.isUnspecified() ? mib->address : srcAddress);
             header->setReceiverAddress(destAddress);
         }
         else if (mib->bssStationData.stationType == Ieee80211Mib::STATION) {
